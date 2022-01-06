@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import Button, {ButtonType} from './Button';
+import Calc, { CalcInput, InputType, OperatorType } from '../modules/calc';
+import Button, {ButtonType, Props} from './Button';
 
 const Container = styled.div`
 
@@ -26,24 +27,92 @@ align-items: center;
 `
 
 const Calculator: React.FC<{}> = () => {
+    const [inputs, setInputs ] = useState<Array<CalcInput>>([]);
+    const state = Calc.getState(inputs);
+    console.log(inputs);
+
+    const appendInput = (input: CalcInput): void => {
+        setInputs(prev => [...prev, input])
+    }
+        
+    const handleNumerical = (value: number) => () => {
+        appendInput({type: InputType.Numberical, value})
+    }
+
+    const handleOperator = (operator: OperatorType) => () => {
+        appendInput({type: InputType.Operator, operator})
+    }
+
+    const handleAllClear = () => setInputs([]);
+
+    const handleUnde = () => setInputs(prev => prev.slice(0, -1))
+
+
+    
+    const mapButton: Props[] = [
+        {
+            label: '1' ,  
+            position: [0, 2], 
+            onClick: (handleNumerical(1))
+        },
+        {
+            label: '2', 
+            position: [1, 2], 
+            onClick: (handleNumerical(2))
+        },
+        {
+            label: '3', 
+            position: [2, 2], 
+            onClick: (handleNumerical(3))
+        },
+        {
+            label: '4', 
+            position: [0, 3], 
+            onClick: (handleNumerical(4))
+        },
+        {
+            label: '5', 
+            position: [1, 3], 
+            onClick: (handleNumerical(5))
+        },
+        {
+            label: '6', 
+            position: [2, 3],
+            onClick: (handleNumerical(6))
+        },
+        {
+            label: '7', 
+            position: [0, 4],
+            onClick: (handleNumerical(7))
+        },
+        {
+            label: '8', 
+            position: [1, 4],
+            onClick: (handleNumerical(8))
+        },
+        {
+            label: '9', 
+            position: [2, 4],
+            onClick: (handleNumerical(9))
+        },
+        {
+            label: '0', 
+            position: [0, 5],
+            onClick: (handleNumerical(0)),
+            width: 3
+        },
+    ]
+
+
     return <Container>
         <Grid>
-            <Display> 42 </Display>
-            <Button label="AC" position={[0,1]} width={2} />
-            <Button label="C" position={[2, 1]} width={2} />
-            <Button label="+" position={[3, 2]} />
-            <Button label="-" position={[3, 3]} />
-            <Button label="=" position={[3, 4]} height={2}/>
-            <Button type={ButtonType.Number} label="1" position={[0, 2]} />
-            <Button type={ButtonType.Number} label="2" position={[1, 2]} />
-            <Button type={ButtonType.Number} label="3" position={[2, 2]} />
-            <Button type={ButtonType.Number} label="4" position={[0, 3]} />
-            <Button type={ButtonType.Number} label="5" position={[1, 3]} />
-            <Button type={ButtonType.Number} label="6" position={[2, 3]} />
-            <Button type={ButtonType.Number} label="7" position={[0, 4]} />
-            <Button type={ButtonType.Number} label="8" position={[1, 4]} />
-            <Button type={ButtonType.Number} label="9" position={[2, 4]} />
-            <Button type={ButtonType.Number} label="0" position={[0, 5]} width={3} />
+            <Display> {state.displayValue} </Display>
+            <Button label="AC" position={[0,1]} width={2} onClick={handleAllClear}/>
+            <Button label="Undo" position={[2, 1]} width={2} onClick={handleUnde}/>
+            <Button label="+" position={[3, 2]} onClick={handleOperator(OperatorType.Add)} />
+            <Button label="-" position={[3, 3]} onClick={handleOperator(OperatorType.Subtract)} />
+            <Button label="=" position={[3, 4]} onClick={handleOperator(OperatorType.Equals)} height={2}/>
+            {mapButton.map(element => <Button buttonType={ButtonType.Number}  {...element}/>)}
         </Grid>
     </Container>;
 };
